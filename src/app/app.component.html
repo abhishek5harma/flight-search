@@ -1,20 +1,249 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<!-- Header navbar -->
+<div class="container-fluid head">
+    <nav class="navbar navbar-expand-sm bg-dark">
+        <div class="heading">Flight Search Engine</div>
+    </nav>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
 
+
+<!-- Fetching List of Cities for suggestions in input form (getCities())-->
+<datalist id="citylist">
+    <option *ngFor="let a of airports" value="{{a.city}}">
+</datalist>
+
+
+<!-- Application Layout Starts -->
+<div class="row">
+    <!-- Sidebar layout Starts-->
+    <div class="col-sm-3 sidebar-grey">
+        <div class="container">
+
+
+            <!-- Nav tabs (One-Way/Return) -->
+            <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="oneway-tab" data-toggle="tab" href="#oneway" role="tab" aria-controls="oneway" aria-selected="true">One Way</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="return-tab" data-toggle="tab" href="#return" role="tab" aria-controls="return" aria-selected="false">Return</a>
+                </li>
+            </ul>
+
+            <br>
+
+            <!-- Tab panes (One-Way/Return)  -->
+            <div class="tab-content" id="myTabContent">
+                <!-- One-way form Starts -->
+                <div class="tab-pane fade show active" id="oneway" role="tabpanel" aria-labelledby="oneway-tab">
+                    <form #oneWayForm="ngForm" (ngSubmit)="search(oneWayForm)">
+                        <div class="form-group">
+                            <input list="citylist" type="text" class="form-control" name="origin" [(ngModel)]="origin" placeholder="Enter Origin City"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <input list="citylist" class="form-control" name="dest" [(ngModel)]="dest" placeholder="Enter Destination City" required>
+                        </div>
+                        <div class="form-group">
+                            Departure Date:
+                            <input type="date" class="form-control" [(ngModel)]="deptDate" name="deptDate" required>
+                        </div>
+                        Passengers:
+                        <input type="number" class="form-control" name="pCount" [(ngModel)]="pCount" min="1" max="5" required>
+                        <br>
+                        <button class="form-group" type="submit" [disabled]="!oneWayForm.form.valid">Search</button>
+                        <br>
+
+                        <div class="form-control" style="height:180px;padding:10px">
+
+                            <span>Refine Flight Search</span>
+                            <br>
+                            <span style="font-size:13px">Set Min Price:
+                                <b>Rs.{{minPrice}}</b>
+                            </span>
+                            <input type="range" class="form-control" min="1" max="10000" name="minPrice" [(ngModel)]="minPrice">
+                            <span style="float:left;font-size:13px">0</span>
+                            <span style="float:right;font-size:13px">10000</span>
+                            <br>
+                            <span style="font-size:13px">Set Max Price:
+                                <b>Rs.{{maxPrice}}</b>
+                            </span>
+                            <input type="range" class="form-control" min="1" max="10000" name="maxPrice" [(ngModel)]="maxPrice">
+                            <span style="float:left;font-size:13px">0</span>
+                            <span style="float:right;font-size:13px">10000</span>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+                <!-- One-Way form Ends  -->
+
+
+                <!-- Return form Starts -->
+                <div class="tab-pane fade" id="return" role="tabpanel" aria-labelledby="return-tab">
+                    <form #returnForm="ngForm" (ngSubmit)="search(returnForm)">
+                        <div class="form-group">
+                            <input list="citylist" class="form-control" id="origin" [(ngModel)]="origin" name="origin" placeholder="Enter Origin City"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <input list="citylist" class="form-control" id="dest" [(ngModel)]="dest" name="dest" placeholder="Enter Destination City"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            Departure Date:
+                            <input type="date" class="form-control" [(ngModel)]="deptDate" name="deptDate" required>
+                        </div>
+                        <div class="form-group">
+                            Return Date:
+                            <input type="date" class="form-control" [(ngModel)]="returnDate" name="returnDate" required>
+                        </div>
+                        Passengers:
+                        <input type="number" class="form-control" name="pCount" [(ngModel)]="pCount" min="1" max="5" required>
+                        <br>
+                        <button class="form-group" type="submit" [disabled]="!returnForm.form.valid">Search</button>
+                        <br>
+
+                        <div class="form-control" style="height:180px;padding:10px">
+
+                            <span>Refine Flight Search</span>
+                            <br>
+                            <span style="font-size:13px">Set Min Price:
+                                <b>Rs.{{minPrice}}</b>
+                            </span>
+                            <input type="range" class="form-control" min="1" max="10000" name="minPrice" [(ngModel)]="minPrice">
+                            <span style="float:left;font-size:13px">0</span>
+                            <span style="float:right;font-size:13px">10000</span>
+                            <br>
+                            <span style="font-size:13px">Set Max Price:
+                                <b>Rs.{{maxPrice}}</b>
+                            </span>
+                            <input type="range" class="form-control" min="1" max="10000" name="maxPrice" [(ngModel)]="maxPrice">
+                            <span style="float:left;font-size:13px">0</span>
+                            <span style="float:right;font-size:13px">10000</span>
+                        </div>
+
+                    </form>
+                    <br>
+                </div>
+                <!-- Return Form Ends -->
+            </div>
+        </div>
+    </div>
+    <!-- Sidebar layout Ends-->
+
+    <!-- Search Result Layout. Results are displayed in this division -->
+    <div class="col-sm-9 result">
+        <div class="row">
+            <div class="col-sm-6" *ngIf='formValue != null'>
+                <span style="font-size: 30px">
+                    <b>{{formValue.origin}}</b> >
+                    <b>{{formValue.dest}}</b>
+                    <span *ngIf="formValue.returnDate != null"> >
+                        <b>{{formValue.origin}}</b>
+                    </span>
+                </span>
+            </div>
+            <div class="col-sm-6" *ngIf='formValue != null'>
+                <span style="font-size: 15px;float:right">
+                    Depart:
+                    <b>{{formValue.deptDate}}</b>
+
+                    <span *ngIf="formValue.returnDate != null">
+                        <br>Return:
+                        <b>{{formValue.returnDate}}</b>
+                    </span>
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <!-- One-way Results- All the airlines for One-way Journey -->
+            <div class="col-sm-6" style="overflow-y:scroll;height: 110vh">
+                <div *ngFor="let a of airlines" class="jumbotron ">
+
+                    <div class="column">
+                        <div class="col-sm-4">
+                            <span style="float:left; font-size:20px;color:black">₹
+                                <b>{{a.price}}.00</b>
+                            </span>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <br>
+                                <span style="font-size: 10px">{{a.name}}</span>
+                                <br>
+                                <span style="font-size: 14px">
+                                    <b>{{a.from}}</b> >
+                                    <b>{{a.to}}</b>
+                                </span>
+                                <br>
+                                <span style="font-size: 14px">Depart:
+                                    <b>{{a.Dept_time}}</b>
+                                </span>
+                                <br>
+                                <span style="font-size: 14px">Arrival:
+                                    <b>{{a.arvl_time}}</b>
+                                </span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <img src="../assets/oneway.png" alt="OneWayFlight" width="100px" height="100px" style="float:right">
+                                <br>
+                                <button class="btn-success" style="float:right">Book this flight</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- Return Results- All the airlines for Return Journey -->
+            <div class="col-sm-6" style="overflow-y:scroll;height: 110vh">
+                <div *ngFor="let a of returnAirlines" class="jumbotron ">
+
+                    <div class="column">
+                        <div class="col-sm-4">
+                            <span style="float:left; font-size:20px;color:black">₹
+                                <b>{{a.price}}.00</b>
+                            </span>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <br>
+                                <span style="font-size: 10px">{{a.name}}</span>
+                                <br>
+                                <span style="font-size: 14px">
+                                    <b>{{a.from}}</b> >
+                                    <b>{{a.to}}</b>
+                                </span>
+                                <br>
+                                <span style="font-size: 14px">Depart:
+                                    <b>{{a.Dept_time}}</b>
+                                </span>
+                                <br>
+                                <span style="font-size: 14px">Arrival:
+                                    <b>{{a.arvl_time}}</b>
+                                </span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <img src="../assets/oneway.png" alt="ReturnFlight" width="100px" height="100px" style="float:right">
+                                <br>
+                                <button class="btn-success" style="float:right">Book this flight</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+<!-- Application Layout Ends -->
