@@ -11,9 +11,13 @@ import { Airlines } from './airlines';
 })
 export class AppComponent implements OnInit {
  
-
-
-
+  origin:String;
+  dest:String;
+  deptDate:String;
+  returnDate:String;
+  pCount:Number
+  minPrice:Number;
+  maxPrice:Number;
   airports: Airports[];       //to store list of airports 
   airlines: Airlines[];       //to store list of all airlines for One Way
   returnAirlines: Airlines[]; //to store list of all airlines for Return
